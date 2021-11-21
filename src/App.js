@@ -1,7 +1,8 @@
-import React from "react";
+/* eslint-disable func-names */
+import React from 'react';
 
-function App() {
-  return <div>hi</div>;
-}
+const App = function () {
+  return <div>worked inv.</div>;
+};
 
 export default App;
