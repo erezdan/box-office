@@ -46,7 +46,6 @@ const Home = () => {
     setSearchOption(ev.target.value);
   };
 
-  console.log(input);
   return (
     <MainPageLayout>
       <input
