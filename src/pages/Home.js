@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import ActorGrid from '../components/actor/ActorGrid';
 import CustomRadio from '../components/CustomRadio';
 import MainPageLayout from '../components/MainPageLayout';
@@ -13,44 +13,49 @@ import {
 
 // tvmaze.com
 
+const renderResults = results => {
+  if (results && results.length === 0) {
+    return <div>No results</div>;
+  }
+  if (results && results.length > 0) {
+    return results[0].show ? (
+      <ShowGrid data={results} />
+    ) : (
+      <ActorGrid data={results} />
+    );
+  }
+  return null;
+};
+
 const Home = () => {
   const [input, setInput] = useLastQuery();
   const [results, setResults] = useState(null);
   const [searchOption, setSearchOption] = useState('shows');
   const isShowsSearch = searchOption === 'shows';
 
-  const onInputChange = ev => {
-    setInput(ev.target.value);
-  };
-
-  const search = () => {
+  const onSearch = () => {
     apiGet(`/search/${searchOption}?q=${input}`).then(result => {
       setResults(result);
     });
   };
 
+  const onInputChange = useCallback(
+    ev => {
+      setInput(ev.target.value);
+    },
+    [setInput]
+  );
+
   const onButtonClick = () => {
-    search(input);
+    onSearch(input);
   };
   const onKeyDown = ev => {
-    if (ev.keyCode === 13) search(input);
+    if (ev.keyCode === 13) onSearch();
   };
-  const renderResults = () => {
-    if (results && results.length === 0) {
-      return <div>No results</div>;
-    }
-    if (results && results.length > 0) {
-      return results[0].show ? (
-        <ShowGrid data={results} />
-      ) : (
-        <ActorGrid data={results} />
-      );
-    }
-    return null;
-  };
-  const onRadioChange = ev => {
+
+  const onRadioChange = useCallback(ev => {
     setSearchOption(ev.target.value);
-  };
+  }, []);
 
   return (
     <MainPageLayout>
@@ -59,7 +64,7 @@ const Home = () => {
         placeholder="Search for somthing"
         onChange={onInputChange}
         onKeyDown={onKeyDown}
-        val={input}
+        value={input}
       />
 
       <RadioInputsWrapper>
@@ -89,7 +94,7 @@ const Home = () => {
           Search
         </button>
       </SearchButtonWrapper>
-      {renderResults()}
+      {renderResults(results)}
     </MainPageLayout>
   );
 };
